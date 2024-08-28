@@ -1,9 +1,12 @@
 import sys
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
 
-from src.styles.styles import get_invalid_login_style
+from src.styles.styles import (get_invalid_login_style,
+                               font_style_for_QTableView,
+                               style_QMenuBar)
 from interface.interface import Ui_MainWindow
 from db.db_manager import DBManager
 from user_widgets.confirmation_window import ConfirmationDialog
@@ -16,6 +19,8 @@ class Window:
         self.ui.setupUi(self.window)
 
         self.db = DBManager()
+
+        self.hideMenuBar()
 
         # Список со всеми вкладками семестров
         self.group_table_views = [
@@ -31,7 +36,7 @@ class Window:
 
         # Кнопки
         self.ui.btn_enter_account.clicked.connect(self.auth_page)
-        self.ui.btn_logout.clicked.connect(self.confirm_logout)
+        self.ui.btn_quit_profile.triggered.connect(self.confirm_logout)
 
         # Инициализация ID куратора
         self.current_curator_id = None
@@ -44,9 +49,28 @@ class Window:
         self.ui.choice_group.currentTextChanged.connect(
             self.update_students_table)
 
+        # Установка стиля для QTableView
+        self.set_common_table_view_style()
+
+        # Установка стиля для строки меню
+        self.ui.menuBar.setStyleSheet(style_QMenuBar)
+
     def show(self):
         """Отображение окна приложения."""
         self.window.show()
+
+    def showMenuBar(self):
+        """Показать строку меню."""
+        self.ui.menuBar.setVisible(True)
+
+    def hideMenuBar(self):
+        """Скрыть строку меню."""
+        self.ui.menuBar.setVisible(False)
+
+    def set_common_table_view_style(self):
+        """Установка общего стиля шрифта для всех QTableView."""
+        for table_view in self.group_table_views:
+            table_view.setStyleSheet(font_style_for_QTableView)
 
     def auth_page(self):
         """Авторизация пользователя."""
@@ -80,51 +104,96 @@ class Window:
 
     def update_students_table(self):
         """Обновление таблицы на основе выбранной группы и активной вкладки."""
+        self.showMenuBar()
+
         if self.current_curator_id is None:
             return
 
-        # Получаем выбранную группу из списка групп
         selected_group = self.ui.choice_group.currentText()
         id_group = self.db.get_group_by_name(selected_group)
 
-        # Проверяем, что группа выбрана
         if selected_group and id_group:
             id_group = id_group[0][0]
-
-            # Получаем информацию о группе
             group_info = self.db.get_group_by_id(id_group)
-            group_semester = group_info[0][3]  # Семестр группы
+            group_semester = group_info[0][3]
 
-            # Обновляем данные для каждой вкладки
+            self.change_color_tab(group_semester)
+
             for i in range(5):
                 semester = i + 1
                 if semester == group_semester:
-                    # Текущий семестр (текущие данные)
                     students = self.db.get_students_by_semester(
-                        id_group, semester, archived=False
-                    )
+                        id_group, semester, archived=False)
+                    is_archived = False
                 elif semester < group_semester:
-                    # Архивные данные для семестров до текущего
                     students = self.db.get_students_by_semester(
-                        id_group, semester, archived=True
-                    )
+                        id_group, semester, archived=True)
+                    is_archived = True
                 else:
-                    # Пустая таблица для будущих семестров
                     students = []
+                    is_archived = False
 
-                # Заполняем таблицу данными студентов
                 model = QStandardItemModel()
                 model.setHorizontalHeaderLabels(
                     ['Фамилия', 'Имя', 'Задолженности']
                 )
+
                 for student in students:
                     surname_item = QStandardItem(student[0])
                     name_item = QStandardItem(student[1])
                     debts_item = QStandardItem(str(student[2]))
+
+                    # Если группа в архиве, запрещаем изменять колонки
+                    if is_archived:
+                        surname_item.setFlags(
+                            surname_item.flags() & ~Qt.ItemIsEditable)
+                        name_item.setFlags(
+                            name_item.flags() & ~Qt.ItemIsEditable)
+                        debts_item.setFlags(
+                            debts_item.flags() & ~Qt.ItemIsEditable)
+                    else:
+                        # Разрешаем редактировать только задолженности
+                        name_item.setFlags(
+                            name_item.flags() & ~Qt.ItemIsEditable)
+                        surname_item.setFlags(
+                            surname_item.flags() & ~Qt.ItemIsEditable)
+
                     model.appendRow([surname_item, name_item, debts_item])
 
-                # Устанавливаем модель в таблицу на соответствующей вкладке
                 self.group_table_views[i].setModel(model)
+
+                # Подключаем сигнал для отслеживания изменений данных в таблице
+                model.itemChanged.connect(
+                    lambda item, archived=is_archived:
+                    self.on_item_changed(item, id_group, archived)
+                )
+
+    def change_color_tab(self, semester):
+        """Окрашивает вкладку в зависимости от текущего семестра."""
+        # Предварительная очистка от цветов
+        for i in range(self.ui.group_tables_semesters.count()):
+            self.ui.group_tables_semesters.tabBar().setTabTextColor(
+                i, QColor(0, 0, 0))
+
+        for i in range(self.ui.group_tables_semesters.count()):
+            if i + 1 == semester:
+                self.ui.group_tables_semesters.tabBar().setTabTextColor(
+                    i, QColor(90, 213, 62))
+            else:
+                ...
+
+    def on_item_changed(self, item, id_group, is_archived):
+        """Обработка изменений в таблице и обновление базы данных."""
+        # Обновляем только если изменена колонка "Задолженности"
+        # и не архивные данные
+        if item.column() == 2 and not is_archived:
+            row = item.row()
+            student_surname = item.model().item(row, 0).text()
+            student_name = item.model().item(row, 1).text()
+            new_debt = item.text()
+            self.db.update_student_debt(
+                id_group, student_surname, student_name, new_debt
+            )
 
     def confirm_logout(self):
         dialog = ConfirmationDialog(self.window)
@@ -139,6 +208,7 @@ class Window:
             # Очистка всех таблиц
             for view in self.group_table_views:
                 view.setModel(QStandardItemModel())
+            self.hideMenuBar()
 
     def closeEvent(self, event):
         self.db.close()

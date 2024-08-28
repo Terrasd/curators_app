@@ -37,7 +37,7 @@ class DBManager:
                 group_id INTEGER NOT NULL,
                 surname TEXT NOT NULL,
                 name TEXT NOT NULL,
-                debts INTEGER,
+                debts INTEGER NOT NULL,
                 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
             )
         ''')
@@ -135,6 +135,7 @@ class DBManager:
 
     # Студенты
     def add_student(self, group_id, surname, name, debts):
+        debts = 0 if debts == '' else debts
         self.cursor.execute('''
             INSERT INTO students (group_id, surname, name, debts)
             VALUES (?, ?, ?, ?)
@@ -176,6 +177,16 @@ class DBManager:
                 WHERE group_id = ?
             ''', (group_id,))
         return self.cursor.fetchall()
+
+    def update_student_debt(self, group_id, surname, name, new_debt):
+        """Обновление задолженности студента в базе данных."""
+        new_debt = 0 if new_debt == '' else new_debt
+        self.cursor.execute('''
+            UPDATE students
+            SET debts = ?
+            WHERE group_id = ? AND surname = ? AND name = ?
+        ''', (new_debt, group_id, surname, name))
+        self.connection.commit()
 
     # Методы для отправки в архив
     def archive_group_and_students(self, group_id):

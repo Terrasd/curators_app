@@ -200,6 +200,9 @@ class Ui_MainWindow(object):
         self.inform_group_layout.setObjectName("inform_group_layout")
         self.gridLayout.addWidget(self.inform_group_layout, 2, 1, 1, 1)
         self.group_tables_semesters = QtWidgets.QTabWidget(self.students_page)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.group_tables_semesters.setFont(font)
         self.group_tables_semesters.setFocusPolicy(QtCore.Qt.NoFocus)
         self.group_tables_semesters.setObjectName("group_tables_semesters")
         self.semester_1 = QtWidgets.QWidget()
@@ -207,6 +210,9 @@ class Ui_MainWindow(object):
         self.gridLayout_3 = QtWidgets.QGridLayout(self.semester_1)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.group_table_view_1 = QtWidgets.QTableView(self.semester_1)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        self.group_table_view_1.setFont(font)
         self.group_table_view_1.setObjectName("group_table_view_1")
         self.gridLayout_3.addWidget(self.group_table_view_1, 0, 0, 1, 1)
         self.group_tables_semesters.addTab(self.semester_1, "")
@@ -215,6 +221,9 @@ class Ui_MainWindow(object):
         self.gridLayout_4 = QtWidgets.QGridLayout(self.semester_2)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.group_table_view_2 = QtWidgets.QTableView(self.semester_2)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        self.group_table_view_2.setFont(font)
         self.group_table_view_2.setObjectName("group_table_view_2")
         self.gridLayout_4.addWidget(self.group_table_view_2, 0, 0, 1, 1)
         self.group_tables_semesters.addTab(self.semester_2, "")
@@ -223,6 +232,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5 = QtWidgets.QGridLayout(self.semester_3)
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.group_table_view_3 = QtWidgets.QTableView(self.semester_3)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        self.group_table_view_3.setFont(font)
         self.group_table_view_3.setObjectName("group_table_view_3")
         self.gridLayout_5.addWidget(self.group_table_view_3, 0, 0, 1, 1)
         self.group_tables_semesters.addTab(self.semester_3, "")
@@ -231,6 +243,9 @@ class Ui_MainWindow(object):
         self.gridLayout_6 = QtWidgets.QGridLayout(self.semester_4)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.group_table_view_4 = QtWidgets.QTableView(self.semester_4)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        self.group_table_view_4.setFont(font)
         self.group_table_view_4.setObjectName("group_table_view_4")
         self.gridLayout_6.addWidget(self.group_table_view_4, 0, 0, 1, 1)
         self.group_tables_semesters.addTab(self.semester_4, "")
@@ -239,30 +254,13 @@ class Ui_MainWindow(object):
         self.gridLayout_7 = QtWidgets.QGridLayout(self.semester_5)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.group_table_view_5 = QtWidgets.QTableView(self.semester_5)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        self.group_table_view_5.setFont(font)
         self.group_table_view_5.setObjectName("group_table_view_5")
         self.gridLayout_7.addWidget(self.group_table_view_5, 0, 0, 1, 1)
         self.group_tables_semesters.addTab(self.semester_5, "")
         self.gridLayout.addWidget(self.group_tables_semesters, 2, 0, 1, 1)
-        self.btn_logout = QtWidgets.QPushButton(self.students_page)
-        self.btn_logout.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.btn_logout.setStyleSheet("QPushButton {\n"
-"    background-color: rgb(207, 207, 207);\n"
-"    color: rgb(0, 0, 0);\n"
-"    border: 1px solid rgb(100, 100, 100);\n"
-"    border-radius: 10px;\n"
-"    font-size: 12px;\n"
-"    padding: 10px 20px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background-color: rgb(180, 180, 180);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: rgb(167, 167, 167);\n"
-"}")
-        self.btn_logout.setObjectName("btn_logout")
-        self.gridLayout.addWidget(self.btn_logout, 1, 1, 1, 1)
         self.choice_group = QtWidgets.QComboBox(self.students_page)
         font = QtGui.QFont()
         font.setPointSize(14)
@@ -276,9 +274,19 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.students_page)
         self.horizontalLayout_3.addWidget(self.stackedWidget)
         MainWindow.setCentralWidget(self.centralwidget)
+        self.menuBar = QtWidgets.QMenuBar(MainWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1187, 21))
+        self.menuBar.setObjectName("menuBar")
+        self.profile = QtWidgets.QMenu(self.menuBar)
+        self.profile.setObjectName("profile")
+        MainWindow.setMenuBar(self.menuBar)
+        self.btn_quit_profile = QtWidgets.QAction(MainWindow)
+        self.btn_quit_profile.setObjectName("btn_quit_profile")
+        self.profile.addAction(self.btn_quit_profile)
+        self.menuBar.addAction(self.profile.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         self.group_tables_semesters.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -294,5 +302,6 @@ class Ui_MainWindow(object):
         self.group_tables_semesters.setTabText(self.group_tables_semesters.indexOf(self.semester_3), _translate("MainWindow", "Семестр 3"))
         self.group_tables_semesters.setTabText(self.group_tables_semesters.indexOf(self.semester_4), _translate("MainWindow", "Семестр 4"))
         self.group_tables_semesters.setTabText(self.group_tables_semesters.indexOf(self.semester_5), _translate("MainWindow", "Семестр 5"))
-        self.btn_logout.setText(_translate("MainWindow", "Выйти из профиля"))
+        self.profile.setTitle(_translate("MainWindow", "Профиль"))
+        self.btn_quit_profile.setText(_translate("MainWindow", "Выйти из профиля"))
 from . import res_rc

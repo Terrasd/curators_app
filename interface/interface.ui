@@ -27,7 +27,7 @@
        <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="login_page">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -384,6 +384,11 @@
         </item>
         <item row="2" column="0">
          <widget class="QTabWidget" name="group_tables_semesters">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
@@ -396,7 +401,13 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
-             <widget class="QTableView" name="group_table_view_1"/>
+             <widget class="QTableView" name="group_table_view_1">
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -406,7 +417,13 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <widget class="QTableView" name="group_table_view_2"/>
+             <widget class="QTableView" name="group_table_view_2">
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -416,7 +433,13 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="QTableView" name="group_table_view_3"/>
+             <widget class="QTableView" name="group_table_view_3">
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -426,7 +449,13 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
-             <widget class="QTableView" name="group_table_view_4"/>
+             <widget class="QTableView" name="group_table_view_4">
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -436,38 +465,16 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_7">
             <item row="0" column="0">
-             <widget class="QTableView" name="group_table_view_5"/>
+             <widget class="QTableView" name="group_table_view_5">
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="btn_logout">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	background-color: rgb(207, 207, 207);
-	color: rgb(0, 0, 0);
-	border: 1px solid rgb(100, 100, 100);
-	border-radius: 10px;
-	font-size: 12px;
-	padding: 10px 20px;
-}
-
-QPushButton:hover {
-	background-color: rgb(180, 180, 180);
-}
-
-QPushButton:pressed {
-	background-color: rgb(167, 167, 167);
-}</string>
-          </property>
-          <property name="text">
-           <string>Выйти из профиля</string>
-          </property>
          </widget>
         </item>
         <item row="1" column="0">
@@ -497,6 +504,28 @@ QPushButton:pressed {
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1187</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="profile">
+    <property name="title">
+     <string>Профиль</string>
+    </property>
+    <addaction name="btn_quit_profile"/>
+   </widget>
+   <addaction name="profile"/>
+  </widget>
+  <action name="btn_quit_profile">
+   <property name="text">
+    <string>Выйти из профиля</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="res.qrc"/>

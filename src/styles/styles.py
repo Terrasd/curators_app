@@ -49,3 +49,30 @@ style_QPushButton_conf_exit = '''
         background-color: rgb(167, 167, 167);
     }
 '''
+
+font_style_for_QTableView = '''
+    QTableView {
+        font-family: MS Shell Dlg 2;
+        font-size: 10pt;
+    }
+'''
+
+style_QMenuBar = '''
+    QMenuBar {
+        background-color: rgb(207, 207, 207);
+        border-bottom: 1px solid rgb(100, 100, 100);
+    }
+
+    QMenu {
+        background-color: rgb(207, 207, 207);
+    }
+
+    QMenu::item {
+        background-color: rgb(207, 207, 207);
+    }
+
+    QMenu::item:selected {
+        background-color: rgb(180, 180, 180);
+        color: black;
+    }
+'''
