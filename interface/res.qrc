@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="emb">
+    <file>emblem-removebg.png</file>
+  </qresource>
+</RCC>
