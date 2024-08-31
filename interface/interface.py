@@ -394,7 +394,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.stackedWidget.setCurrentIndex(0)
         self.group_tables_semesters.setCurrentIndex(0)
-        self.group_tables_semesters_superuser.setCurrentIndex(2)
+        self.group_tables_semesters_superuser.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
