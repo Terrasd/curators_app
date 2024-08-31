@@ -31,6 +31,14 @@ class Window:
             self.ui.group_table_view_5
         ]
 
+        self.group_table_views_superuser = [
+            self.ui.group_table_view_1_superuser,
+            self.ui.group_table_view_2_superuser,
+            self.ui.group_table_view_3_superuser,
+            self.ui.group_table_view_4_superuser,
+            self.ui.group_table_view_5_superuser,
+        ]
+
         # Установка активным окно входа
         self.ui.stackedWidget.setCurrentWidget(self.ui.login_page)
 
@@ -48,6 +56,10 @@ class Window:
         # Фиксация переключения группы
         self.ui.choice_group.currentTextChanged.connect(
             self.update_students_table)
+
+        # Фиксация переключения группы у суперпользователя
+        self.ui.choice_group_superuser.currentTextChanged.connect(
+            self.update_students_table_for_superuser)
 
         # Установка стиля для QTableView
         self.set_common_table_view_style()
@@ -71,6 +83,8 @@ class Window:
         """Установка общего стиля шрифта для всех QTableView."""
         for table_view in self.group_table_views:
             table_view.setStyleSheet(font_style_for_QTableView)
+        for table_view in self.group_table_views_superuser:
+            table_view.setStyleSheet(font_style_for_QTableView)
 
     def auth_page(self):
         """Авторизация пользователя."""
@@ -82,19 +96,32 @@ class Window:
         if curator:
             self.ui.text_invalid_log_or_pass.clear()
 
-            # Сохраняем ID текущего куратора
+            is_superuser = curator[2]
             self.current_curator_id = curator[0]
-            self.ui.stackedWidget.setCurrentWidget(self.ui.students_page)
+            if is_superuser == 1:
+                # Суперпользователь - загрузка страницы суперпользователя
+                self.ui.stackedWidget.setCurrentWidget(
+                    self.ui.students_page_superuser)
+                self.load_institutes_for_superuser()
+                self.load_groups_for_superuser()
+                self.update_students_table_for_superuser()
+            else:
+                # Куратор - загрузка страницы куратора
+                self.ui.text_invalid_log_or_pass.clear()
 
-            # Загружаем группы куратора в comboBox
-            sql_groups = self.db.get_groups_by_curator_id(
-                self.current_curator_id)
-            groups_list = [row[0] for row in sql_groups]
-            self.ui.choice_group.clear()
-            self.ui.choice_group.addItems(groups_list)
+                # Сохраняем ID текущего куратора
+                self.current_curator_id = curator[0]
+                self.ui.stackedWidget.setCurrentWidget(self.ui.students_page)
 
-            # Обновляем таблицу для выбранной по умолчанию группы
-            self.update_students_table()
+                # Загружаем группы куратора в comboBox
+                sql_groups = self.db.get_groups_by_curator_id(
+                    self.current_curator_id)
+                groups_list = [row[0] for row in sql_groups]
+                self.ui.choice_group.clear()
+                self.ui.choice_group.addItems(groups_list)
+
+                # Обновляем таблицу для выбранной по умолчанию группы
+                self.update_students_table()
         else:
             self.ui.text_invalid_log_or_pass.clear()
             shadow_effect, style, text = get_invalid_login_style()
@@ -168,19 +195,120 @@ class Window:
                     self.on_item_changed(item, id_group, archived)
                 )
 
-    def change_color_tab(self, semester):
-        """Окрашивает вкладку в зависимости от текущего семестра."""
-        # Предварительная очистка от цветов
-        for i in range(self.ui.group_tables_semesters.count()):
-            self.ui.group_tables_semesters.tabBar().setTabTextColor(
-                i, QColor(0, 0, 0))
+    def load_institutes_for_superuser(self):
+        """Загрузка всех институтов в comboBox для суперпользователя."""
+        institutes = self.db.get_all_institutes()
+        institute_names = [institute[1] for institute in institutes]
+        self.ui.choice_institute_superuser.clear()
+        self.ui.choice_institute_superuser.addItems(institute_names)
 
-        for i in range(self.ui.group_tables_semesters.count()):
-            if i + 1 == semester:
+        # Подключение обработчика для выбора института
+        self.ui.choice_institute_superuser.currentTextChanged.connect(
+            self.load_groups_for_superuser)
+
+    def load_groups_for_superuser(self):
+        """Загрузка групп по выбранному институту в comboBox."""
+        selected_institute = self.ui.choice_institute_superuser.currentText()
+        institute_id = self.db.get_institute_by_name(selected_institute)
+
+        if institute_id:
+            institute_id = institute_id[0][0]
+            groups = self.db.get_groups_by_institute(institute_id)
+            group_names = [group[0] for group in groups]
+            self.ui.choice_group_superuser.clear()
+            self.ui.choice_group_superuser.addItems(group_names)
+
+    def update_students_table_for_superuser(self):
+        """
+        Обновление таблицы для суперпользователя
+        на основе выбранной группы и активной вкладки.
+        """
+        self.showMenuBar()
+
+        selected_group = self.ui.choice_group_superuser.currentText()
+        id_group = self.db.get_group_by_name(selected_group)
+
+        if selected_group and id_group:
+            id_group = id_group[0][0]
+            group_info = self.db.get_group_by_id(id_group)
+            group_semester = group_info[0][3]
+
+            self.change_color_tab(group_semester, True)
+
+            for i in range(5):
+                semester = i + 1
+                if semester == group_semester:
+                    students = self.db.get_students_by_semester(
+                        id_group, semester, archived=False)
+                    is_archived = False
+                elif semester < group_semester:
+                    students = self.db.get_students_by_semester(
+                        id_group, semester, archived=True)
+                    is_archived = True
+                else:
+                    students = []
+                    is_archived = False
+
+                model = QStandardItemModel()
+                model.setHorizontalHeaderLabels(
+                    ['Фамилия', 'Имя', 'Задолженности']
+                )
+
+                for student in students:
+                    surname_item = QStandardItem(student[0])
+                    name_item = QStandardItem(student[1])
+                    debts_item = QStandardItem(str(student[2]))
+
+                    if is_archived:
+                        surname_item.setFlags(
+                            surname_item.flags() & ~Qt.ItemIsEditable)
+                        name_item.setFlags(
+                            name_item.flags() & ~Qt.ItemIsEditable)
+                        debts_item.setFlags(
+                            debts_item.flags() & ~Qt.ItemIsEditable)
+                    else:
+                        name_item.setFlags(
+                            name_item.flags() & ~Qt.ItemIsEditable)
+                        surname_item.setFlags(
+                            surname_item.flags() & ~Qt.ItemIsEditable)
+
+                    model.appendRow([surname_item, name_item, debts_item])
+
+                self.group_table_views_superuser[i].setModel(model)
+
+                model.itemChanged.connect(
+                    lambda item, archived=is_archived:
+                    self.on_item_changed(item, id_group, archived)
+                )
+
+    def change_color_tab(self, semester, superuser=None):
+        """Окрашивает вкладку в зависимости от текущего семестра."""
+        if superuser:
+            # Предварительная очистка от цветов
+            for i in range(self.ui.group_tables_semesters_superuser.count()):
+                (
+                    self.ui.group_tables_semesters_superuser.tabBar()
+                ).setTabTextColor(i, QColor(0, 0, 0))
+
+            for i in range(self.ui.group_tables_semesters_superuser.count()):
+                if i + 1 == semester:
+                    (
+                        self.ui.group_tables_semesters_superuser.tabBar()
+                    ).setTabTextColor(i, QColor(90, 213, 62))
+                else:
+                    ...
+        else:
+            # Предварительная очистка от цветов
+            for i in range(self.ui.group_tables_semesters.count()):
                 self.ui.group_tables_semesters.tabBar().setTabTextColor(
-                    i, QColor(90, 213, 62))
-            else:
-                ...
+                    i, QColor(0, 0, 0))
+
+            for i in range(self.ui.group_tables_semesters.count()):
+                if i + 1 == semester:
+                    self.ui.group_tables_semesters.tabBar().setTabTextColor(
+                        i, QColor(90, 213, 62))
+                else:
+                    ...
 
     def on_item_changed(self, item, id_group, is_archived):
         """Обработка изменений в таблице и обновление базы данных."""

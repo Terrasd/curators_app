@@ -15,7 +15,8 @@ class DBManager:
                 surname TEXT NOT NULL,
                 name TEXT NOT NULL,
                 login TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                is_superuser INTEGER DEFAULT 0
             )
         ''')
 
@@ -26,7 +27,9 @@ class DBManager:
                 curator_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 semester INTEGER NOT NULL,
-                FOREIGN KEY (curator_id) REFERENCES curators (id) ON DELETE CASCADE
+                institute_id INTEGER NOT NULL,
+                FOREIGN KEY (curator_id) REFERENCES curators (id) ON DELETE CASCADE,
+                FOREIGN KEY (institute_id) REFERENCES institutes (id) ON DELETE CASCADE
             )
         ''')
 
@@ -42,6 +45,14 @@ class DBManager:
             )
         ''')
 
+        # Таблица институтов
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS institutes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            )
+        ''')
+
         # Таблица с информацией о группах за прошлые семестры
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS archived_groups (
@@ -49,7 +60,9 @@ class DBManager:
                 curator_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 semester TEXT NOT NULL,
-                FOREIGN KEY (curator_id) REFERENCES curators (id) ON DELETE CASCADE
+                institute_id INTEGER NOT NULL,
+                FOREIGN KEY (curator_id) REFERENCES curators (id) ON DELETE CASCADE,
+                FOREIGN KEY (institute_id) REFERENCES institutes (id) ON DELETE CASCADE
             )
         ''')
 
@@ -80,20 +93,31 @@ class DBManager:
         except sqlite3.IntegrityError:
             print(f'Куратор с логином "{login}" уже существует.')
 
+    def add_curator_superuser(self, surname, name, login, password):
+        try:
+            self.cursor.execute('''
+                INSERT INTO curators (surname, name, login, password, is_superuser)
+                VALUES (?, ?, ?, ?, 1)
+            ''', (surname, name, login, password))
+            self.connection.commit()
+            print(f'Куратор-superuser "{login}" успешно добавлен.')
+        except sqlite3.IntegrityError:
+            print(f'Куратор с логином "{login}" уже существует.')
+
     def verify_curator(self, login, password):
         self.cursor.execute('''
-            SELECT id, login
+            SELECT id, login, is_superuser
             FROM curators
             WHERE login = ? AND password = ?
         ''', (login, password))
         return self.cursor.fetchone()
 
     # Группы
-    def add_group(self, curator_id, name, semester):
+    def add_group(self, curator_id, name, semester, institute_id):
         self.cursor.execute('''
-            INSERT INTO groups (curator_id, name, semester)
-            VALUES (?, ?, ?)
-        ''', (curator_id, name, semester))
+            INSERT INTO groups (curator_id, name, semester, institute_id)
+            VALUES (?, ?, ?, ?)
+        ''', (curator_id, name, semester, institute_id))
         self.connection.commit()
 
     def update_semester_group(self, group_id):
@@ -188,6 +212,14 @@ class DBManager:
         ''', (new_debt, group_id, surname, name))
         self.connection.commit()
 
+    # Институты
+    def add_institute(self, name):
+        self.cursor.execute('''
+            INSERT INTO institutes (name)
+            VALUES (?)
+        ''', (name,))
+        self.connection.commit()
+
     # Методы для отправки в архив
     def archive_group_and_students(self, group_id):
         # Получаем текущий семестр группы
@@ -198,8 +230,8 @@ class DBManager:
 
         # Копируем группу в архив
         self.cursor.execute('''
-            INSERT INTO archived_groups (curator_id, name, semester)
-            SELECT curator_id, name, ?
+            INSERT INTO archived_groups (curator_id, name, semester, institute_id)
+            SELECT curator_id, name, ?, institute_id
             FROM groups
             WHERE id = ?
         ''', (semester, group_id))
@@ -214,6 +246,28 @@ class DBManager:
 
         # Сохраняем изменения в базе данных
         self.connection.commit()
+
+    # Метод для получения групп по выбранному институту
+    def get_groups_by_institute(self, institute_id):
+        self.cursor.execute('''
+            SELECT name FROM groups
+            WHERE institute_id = ?
+        ''', (institute_id,))
+        return self.cursor.fetchall()
+
+    # Метод для получения всех институтов
+    def get_all_institutes(self):
+        self.cursor.execute('''
+            SELECT id, name FROM institutes
+        ''')
+        return self.cursor.fetchall()
+
+    def get_institute_by_name(self, name):
+        self.cursor.execute('''
+            SELECT id FROM institutes
+            WHERE name = ?
+        ''', (name,))
+        return self.cursor.fetchall()
 
     # Закрытие базы данных
     def close(self):
