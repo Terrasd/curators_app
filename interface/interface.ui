@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1187</width>
-    <height>807</height>
+    <width>1324</width>
+    <height>877</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ЯКуратор</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(35, 123, 230, 255), stop:0.636364 rgba(160, 176, 186, 255), stop:1 rgba(172, 198, 230, 255));</string>
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0.227273 rgba(109, 143, 255, 255), stop:0.886364 rgba(149, 169, 192, 255), stop:1 rgba(145, 167, 194, 255));</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -352,36 +352,6 @@
       </widget>
       <widget class="QWidget" name="students_page">
        <layout class="QGridLayout" name="gridLayout">
-        <item row="2" column="1">
-         <widget class="QGroupBox" name="inform_group_layout">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>260</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="title">
-           <string>Информация о группе</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QTabWidget" name="group_tables_semesters">
           <property name="font">
@@ -479,6 +449,12 @@
         </item>
         <item row="1" column="0">
          <widget class="QComboBox" name="choice_group">
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>14</pointsize>
@@ -498,12 +474,8 @@
           </property>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="students_page_superuser">
-       <layout class="QGridLayout" name="gridLayout_13">
-        <item row="2" column="1">
-         <widget class="QGroupBox" name="inform_group_layout_superuser">
+        <item row="1" column="1" rowspan="2">
+         <widget class="QGroupBox" name="inform_group_layout">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -512,14 +484,23 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>260</width>
+            <width>0</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>400</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="title">
            <string>Информация о группе</string>
@@ -529,8 +510,24 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+       </layout>
+      </widget>
+      <widget class="QWidget" name="students_page_superuser">
+       <layout class="QGridLayout" name="gridLayout_13">
+        <item row="4" column="0">
          <widget class="QTabWidget" name="group_tables_semesters_superuser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>300</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>10</pointsize>
@@ -549,6 +546,12 @@
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
              <widget class="QTableView" name="group_table_view_1_superuser">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>MS Shell Dlg 2</family>
@@ -632,6 +635,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>14</pointsize>
@@ -645,25 +654,14 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QListView" name="group_list_superuser">
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QListView {
-	background-color: rgb(255, 255, 255);
-	border-radius: 10px;
-	padding: 15px 15px;
-}</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
+        <item row="2" column="0">
          <widget class="QLineEdit" name="find_group_by_name">
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>12</pointsize>
@@ -679,6 +677,74 @@
           </property>
          </widget>
         </item>
+        <item row="3" column="0">
+         <widget class="QListView" name="group_list_superuser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>500</width>
+            <height>270</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QListView {
+	background-color: rgb(255, 255, 255);
+	border-radius: 7px;
+	padding: 15px 15px;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" rowspan="4">
+         <widget class="QGroupBox" name="inform_group_layout_superuser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>400</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="title">
+           <string>Информация о группе</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -690,7 +756,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1187</width>
+     <width>1324</width>
      <height>21</height>
     </rect>
    </property>

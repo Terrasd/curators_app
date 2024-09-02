@@ -12,16 +12,17 @@ from db.db_manager import DBManager
 from user_widgets.confirmation_window import ConfirmationDialog
 
 
-class Window:
+class Window(QMainWindow):
     def __init__(self):
         """
         Инициализация главного окна приложения
         и установка начальных параметров.
         """
+        super().__init__()
+
         # Создание основного окна и инициализация интерфейса
-        self.window = QMainWindow()
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.window)
+        self.ui.setupUi(self)
 
         # Инициализация базы данных
         self.db = DBManager()
@@ -53,6 +54,10 @@ class Window:
         self.ui.btn_enter_account.clicked.connect(self.auth_page)
         self.ui.btn_quit_profile.triggered.connect(self.confirm_logout)
 
+        # Установка фильтра событий для полей ввода
+        self.ui.login_enter.installEventFilter(self)
+        self.ui.password_enter.installEventFilter(self)
+
         # Инициализация ID текущего куратора
         self.current_curator_id = None
 
@@ -80,9 +85,9 @@ class Window:
         # Обновление модели при изменении текста поиска
         self.ui.find_group_by_name.textChanged.connect(self.filter_groups)
 
-    def show(self):
-        """Отображение главного окна приложения."""
-        self.window.show()
+    # def show(self):
+    #     """Отображение главного окна приложения."""
+    #     self.window.show()
 
     def showMenuBar(self):
         """Показать строку меню."""
@@ -368,7 +373,7 @@ class Window:
 
     def confirm_logout(self):
         """Подтверждение выхода и очистка данных пользователя."""
-        dialog = ConfirmationDialog(self.window)
+        dialog = ConfirmationDialog(self)
         result = dialog.exec_()
 
         if result == QDialog.Accepted:
@@ -383,6 +388,32 @@ class Window:
         """Очистка всех таблиц студентов."""
         for view in self.group_table_views + self.group_table_views_superuser:
             view.setModel(QStandardItemModel())
+
+    def eventFilter(self, obj, event):
+        """
+        Перехватывает события, происходящие в виджетах
+        с установленным фильтром событий.
+
+        Этот метод обрабатывает события нажатия
+        клавиш для полей ввода логина и пароля.
+
+        :param QObject obj: Объект, на котором произошло событие.
+        :param QEvent event: Событие, которое произошло.
+
+        :return: True, если событие было обработано здесь
+        и не должно быть передано дальше.
+        :return: False, если событие должно быть
+        передано дальше для стандартной обработки.
+        """
+        if event.type() == event.KeyPress and (
+                event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return):
+            # Проверяем, что фокус ввода находится
+            # на одном из полей ввода логина или пароля
+            if obj == self.ui.login_enter or obj == self.ui.password_enter:
+                self.ui.btn_enter_account.click()
+                return True
+
+        return super().eventFilter(obj, event)
 
     def closeEvent(self, event):
         """Закрытие события окна: закрытие соединения с базой данных."""
